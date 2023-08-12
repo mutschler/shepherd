@@ -402,12 +402,14 @@ export class Step extends Evented {
     this._resolveAttachToOptions();
     this._setupElements();
 
-    if (!this.tour.modal) {
-      this.tour._setupModal();
+    // make sure we run through setup if step.show() is called directly
+    if (!this.tour.initialized) {
+      this.tour._setup();
     }
 
-    if (Shepherd.activeTour != this.tour) {
-      this.tour._setupActiveTour()
+    // update current step if step.show() was called directly instead of tour.show(step)
+    if (this.tour.currentStep != this) {
+      this.tour.currentStep = this
     }
 
     this.tour.modal.setupForStep(this);

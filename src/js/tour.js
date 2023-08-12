@@ -274,15 +274,30 @@ export class Tour extends Evented {
   start() {
     this.trigger('start');
 
+    this.currentStep = null;
+
+    this._setup();
+
+    this.next();
+  }
+
+  /**
+   * Setup the tour
+   */
+  _setup() {
+    // don't init show again
+    if (this.initialized) {
+      return
+    }
+
     // Save the focused element before the tour opens
     this.focusedElBeforeOpen = document.activeElement;
-
-    this.currentStep = null;
 
     this._setupModal();
 
     this._setupActiveTour();
-    this.next();
+
+    this.initialized = true
   }
 
   /**
@@ -308,6 +323,9 @@ export class Tour extends Evented {
     }
 
     if (event === 'cancel' || event === 'complete') {
+      // reset initialized state
+      this.initialized = false;
+      
       if (this.modal) {
         const modalContainer = document.querySelector(
           '.shepherd-modal-overlay-container'
@@ -315,7 +333,7 @@ export class Tour extends Evented {
 
         if (modalContainer) {
           modalContainer.remove();
-          this.modal = null
+          this.modal = null;
         }
       }
     }
